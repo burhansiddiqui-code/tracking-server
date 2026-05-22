@@ -37,7 +37,11 @@ app.post('/track17/register', async (req, res) => {
   if (!numbers?.length) return res.status(400).json({ error: 'No numbers.' });
  
   try {
-    const body = numbers.map(n => ({ number: n }));
+    // numbers can be array of strings OR array of objects with {number, carrier}
+    const body = numbers.map(n => {
+      if (typeof n === 'string') return { number: n };
+      return n; // already an object with number + optional carrier
+    });
     const response = await axios.post(
       'https://api.17track.net/track/v2.2/register',
       body,
@@ -186,4 +190,4 @@ function emptyResult(num, err) {
 }
 function sleep(ms) { return new Promise(r => setTimeout(r,ms)); }
  
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
